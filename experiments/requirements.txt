@@ -1,0 +1,7 @@
+ipykernel
+spacy
+scrapy
+playwright
+mistralai
+kagglehub
+pdfminer.six
