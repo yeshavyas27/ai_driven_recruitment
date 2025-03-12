@@ -33,7 +33,7 @@ class ScrapeNaukriService():
             context = await browser.new_context(**chrome_device)
             page = await context.new_page()
             await page.goto(self.start_url)  
-            TIMEOUT = 6000
+            TIMEOUT = 60000
             await page.wait_for_load_state("networkidle", timeout=TIMEOUT)
             jobs = []
             for job in await page.locator("css=div.styles_jlc__main__VdwtF > div.srp-jobtuple-wrapper").all():
@@ -91,14 +91,3 @@ jobs = asyncio.run(ScrapeNaukriService(
 ).scrape())
 
 print(jobs)
-'''
-job_title
-years of experience
-comapnay name
-job link
-location
-salary
-job description
-key skills
-education
-'''
