@@ -32,12 +32,16 @@ pip install -r requirements.txt
 playwright install
 ```
 
-### 4. Run the FastAPI Application
+### 4. Configure Environment Variables
+Copy the contents of `.env.example` and create a `.env` file. Add all necessary environment variable values in `.env`.
+
+### 5. Run the FastAPI Application
 ```sh
 fastapi dev app.py
 ```
 
-### 5. Access API Documentation
+### 6. Access API Documentation
 Once the server is running, open your browser and go to:
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
 
