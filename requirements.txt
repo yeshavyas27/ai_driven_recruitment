@@ -1,0 +1,10 @@
+mistralai
+python-dotenv
+playwright
+pdfminer.six
+fastapi[standard]
+bson
+passlib[bcrypt]
+pyjwt
+pymongo[srv]
+boto3
