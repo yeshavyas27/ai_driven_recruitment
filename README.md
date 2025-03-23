@@ -1,5 +1,4 @@
-# ai_driven_recruitment
-Backend of AI based recruitment management system. 
+# Backend of AI based recruitment management system. 
 
 # Project Setup Guide
 
