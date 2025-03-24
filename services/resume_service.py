@@ -6,6 +6,8 @@ from fastapi import HTTPException, status
 import os
 from abstractions.base_service import BaseService
 from services.ai_model_services.resume_parse import ParseResume
+from database.resume import ResumeRepository
+
 
 class ResumeService(BaseService):
     def __init__(self, file_contents):
@@ -21,7 +23,7 @@ class ResumeService(BaseService):
         return file_name
 
 
-    def parse_and_save_resume(self):
+    def parse_and_save_resume(self, user_id, s3_key):
         # Convert bytes to BytesIO for pdfminer
         pdf_file = BytesIO(self.file_contents)
         
@@ -39,8 +41,13 @@ class ResumeService(BaseService):
         )
         parsed_resume = ParseResume().parse(resume_data=text)
         # TODO: save the resume parsed data to DB
-        
-        return parsed_resume
+        resume_id = ResumeRepository().insert(
+            resume_data=parsed_resume,
+            user_id=user_id,
+            s3_key=s3_key
+        )
+
+        return parsed_resume, resume_id
     
     async def __s3_upload(self, key: str):
         self.logger.info(f'Uploading {key} to s3')

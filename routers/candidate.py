@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Path, Query, Body, status, File, UploadFile, Form, Response
-from pydantic import BaseModel, AnyHttpUrl, Field
+from fastapi import APIRouter, Body, status, File, UploadFile, Depends, HTTPException
 from typing import Annotated
+from models.auth import User
 
 from services.resume_service import ResumeService
 from services.job_service import JobService
+from dependancies.auth import get_current_active_user
 
 router = APIRouter(prefix="/candidate", tags=["Candidate"])
 
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/candidate", tags=["Candidate"])
 async def create_file(
     file: Annotated[UploadFile, File()],
     job_link: Annotated[str, Body()],
-    # TODO: auth_token: Annotated[str, Form()] | None = None,
+    user: Annotated[User, Depends(get_current_active_user)],
     response_model=dict
     ):
     '''
@@ -32,17 +33,23 @@ async def create_file(
     resume_service = ResumeService(file_contents=contents)
     file_name = await resume_service.upload_resume_to_s3()
     #parse resume, add the data to resume collection
-    data = resume_service.parse_and_save_resume()
+    resume_data, resume_id = resume_service.parse_and_save_resume(
+        user_id=user.user_id,
+        s3_key=file_name
+    )
 
     # #parse job link and get job data
     job_data = await JobService().parse_job(url=job_link)
     # TODO: calculate match score between resume data and job data
     # match_score = Match(resume_data, job_data)
 
+    # TODO: add resume_id and s3_key to user collection and update it
+    
+
     
     await file.close()
     response  ={
-        "parsed_resume": data, 
+        "parsed_resume": resume_data, 
         "s3_file_key": file_name,
         "parsed_job": job_data
     }

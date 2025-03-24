@@ -1,10 +1,10 @@
 mistralai
 python-dotenv
+pymongo
 playwright
 pdfminer.six
 fastapi[standard]
-bson
 passlib[bcrypt]
 pyjwt
-pymongo[srv]
 boto3
+python-multipart

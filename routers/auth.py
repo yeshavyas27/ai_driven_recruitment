@@ -16,7 +16,7 @@ from utilities.logging_utilities import LoggingUtilities
 
 logger = LoggingUtilities().get_logger()
 
-router = APIRouter(prefix="/users", tags=["User"])
+router = APIRouter(tags=["Auth"])
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
