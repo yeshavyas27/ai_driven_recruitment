@@ -1,8 +1,11 @@
 ipykernel
-spacy
 scrapy
 playwright
 mistralai
 kagglehub
 pdfminer.six
 python-dotenv
+langchain-community
+beautifulsoup4
+langchain-hyperbrowser
+langchain_agentql
