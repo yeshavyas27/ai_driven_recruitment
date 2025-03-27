@@ -13,7 +13,6 @@ async def create_file(
     file: Annotated[UploadFile, File()],
     job_link: Annotated[str, Body()],
     user: Annotated[User, Depends(get_current_active_user)],
-    response_model=dict
     ):
     '''
     Uploads resume to s3 storage and parses resume file to get structured content of resume
