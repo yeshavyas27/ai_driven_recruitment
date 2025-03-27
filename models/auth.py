@@ -19,6 +19,8 @@ class User(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
+    s3_key: str | None =  None
+    resume_id: str | None =  None
 
 
 class UserCreate(BaseModel):

@@ -40,7 +40,6 @@ class ResumeService(BaseService):
             detail='Unable to extract text from the pdf file'
         )
         parsed_resume = ParseResume().parse(resume_data=text)
-        # TODO: save the resume parsed data to DB
         resume_id = ResumeRepository().insert(
             resume_data=parsed_resume,
             user_id=user_id,
