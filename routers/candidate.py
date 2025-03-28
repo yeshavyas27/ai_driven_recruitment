@@ -43,6 +43,7 @@ async def create_file(
     # TODO: calculate match score between resume data and job data
     # match_score = Match(resume_data, job_data)
 
+    # TODO: make a function in Resume service to update the resume
     UserRepository().update_user_with_resume(
         s3_key=file_name,
         resume_id=resume_id,
