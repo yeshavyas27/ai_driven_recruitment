@@ -1,8 +1,12 @@
 from mistralai import Mistral
 import time
 from typing import Dict, Any
+import ast
 import os
 import json
+from langchain_agentql.document_loaders import AgentQLLoader
+
+
 class ParseJob:
     def __init__(self):
 
@@ -14,6 +18,33 @@ class ParseJob:
 
         with open(file_path, 'r') as file:
             self.parsed_job_dict_format = file.read()
+
+    def parse_job_data_agentql(self, job_link):
+        api_key = os.getenv("AGENTQL_API_KEY")
+        loader = AgentQLLoader(
+            url=job_link,
+            query="""
+                {
+                job_data(all data related to the job listing){
+                    company_name(the organisation which is hiring)
+                    job_title(name of role or position)
+                    years_of_experience(expected experience, it could be range as well like 0-2)
+                    salary(stiped or compensation or pay for this job)
+                    location(city, state, country or remote)
+                    job_description(includes details about the responsiblities, job overview and other context related to job like skills and experience context)
+                    education(expected education)[]
+                    all_skills(all kinds technical skills required for the role, this may be implicit and present in job description)[]
+                    key_skills(explicity mentioned skills that the candidate must have)[]
+                }
+            }
+            """,
+            is_scroll_to_bottom_enabled=True,
+            api_key=api_key
+        )
+        docs = loader.load()
+        parsed_job = ast.literal_eval(docs[0].page_content)["job_data"]
+
+        return parsed_job
 
     def parse_job_data(self, page_data):
         start_time = time.time()

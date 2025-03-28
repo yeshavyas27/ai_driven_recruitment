@@ -9,10 +9,15 @@ class JobService(BaseService):
     def __init__(self):
         super().__init__()
 
-    async def parse_job(self, url):
-        page_data = await ScrapeService().scrape(url)
-        # TODO: extract only sensible text from the extracted text and pass that to the model
-        job_data = ParseJob().parse_job_data(page_data=page_data)
+    async def parse_job(self, url, approach="agentql"):
+        if approach == "agentql":
+            job_data = ParseJob().parse_job_data_agentql(job_link=url)
+        
+        else:
+            page_data = await ScrapeService().scrape(url)
+            # TODO: extract only sensible text from the extracted text and pass that to the model
+            job_data = ParseJob().parse_job_data(page_data=page_data)
+
         return job_data
 
 
