@@ -8,3 +8,4 @@ passlib[bcrypt]
 pyjwt
 boto3
 python-multipart
+langchain_agentql

@@ -21,9 +21,9 @@ class ParseResume:
 
         # Start timer for inference time tracking
         start_time = time.time()
-
+        
         # Prepare input message
-        input_message = f"Use the data and output it in the below format. Format:{self.parsed_resume_dict_format} Data:{resume_data}"
+        input_message = f"Extract structured information in the format given from the data. Format: {self.parsed_resume_dict_format} Data:{resume_data}"
 
         # Make API call
         chat_response = self.client.chat.complete(
