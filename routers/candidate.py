@@ -6,6 +6,7 @@ from services.resume_service import ResumeService
 from services.job_service import JobService
 from dependancies.auth import get_current_active_user
 from database.user import UserRepository
+from services.ai_model_services.match import MatchJobResume
 
 router = APIRouter(prefix="/candidate", tags=["Candidate"])
 
@@ -41,9 +42,13 @@ async def create_file(
     # #parse job link and get job data
     job_data = await JobService().parse_job(url=job_link)
     # TODO: calculate match score between resume data and job data
-    # match_score = Match(resume_data, job_data)
+    match_score = MatchJobResume().match(
+            resume_data=resume_data,
+            job_data=job_data,
+            match_criteria="moderate"
+        )
 
-    # TODO: make a function in Resume service to update the resume
+    # TODO: make a function in Resume service to update the resume with s3 link
     UserRepository().update_user_with_resume(
         s3_key=file_name,
         resume_id=resume_id,
@@ -53,6 +58,7 @@ async def create_file(
     
     await file.close()
     response  ={
+        "match_score": match_score,
         "parsed_resume": resume_data, 
         "s3_file_key": file_name,
         "parsed_job": job_data

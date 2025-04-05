@@ -40,3 +40,28 @@ class ResumeRepository(BaseRepository):
         self.logger.debug("Successfully inserted resume data")
         
         return resume_id
+    
+    def fetch_all(self):
+        start_timestamp = datetime.now()
+        all_resumes = []
+        try:
+            candidate_resumes = self.collection.find({})
+            for record in candidate_resumes:
+                record["_id"] = str(record["_id"])
+                all_resumes.append(record)
+
+            end_timestamp = datetime.now()
+            self.logger.info(f"Successfully retrieved documents from {self.collection_name}.")
+            self.logger.info(f"The query execution took {DatetimeUtilities.get_delta_in_milliseconds(start_timestamp, end_timestamp)} ms")
+
+
+        except Exception:
+            error = f"Error while retrieving records from {self.collection_name}"
+            self.logger.error(error)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=error
+            )
+            
+        return all_resumes
+

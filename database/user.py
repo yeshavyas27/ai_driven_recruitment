@@ -8,6 +8,7 @@ from constants.database import MongoCollections
 from app import mongo_instance
 from utilities.datetime_utilities import DatetimeUtilities
 from abstractions.base_repository import BaseRepository
+from constants.auth import UserRoles
 from models.auth import User
 
 class UserRepository(BaseRepository):
@@ -17,14 +18,15 @@ class UserRepository(BaseRepository):
         self.collection = self.db[MongoCollections.USER]
         self.collection_name = MongoCollections.USER
 
-    def insert(self, email_id: str, hashed_password: str, username: str, ) -> User:
+    def insert(self, email_id: str, hashed_password: str, username: str, role: UserRoles) -> User:
         start_timestamp = datetime.now()
 
         new_user = {
             "email_id": email_id,
             "hashed_password": hashed_password,
             "username": username,
-            "disabled": False
+            "disabled": False,
+            "role": role
         }
         try:
             self.logger.debug("Attempting to insert user record in database")
@@ -46,7 +48,8 @@ class UserRepository(BaseRepository):
             "user_id": user_id,
             "email_id": email_id,
             "username": username,
-            "disabled": False
+            "disabled": False,
+            "role": role
         }
         return user
 

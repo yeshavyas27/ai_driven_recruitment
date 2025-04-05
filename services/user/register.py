@@ -11,6 +11,7 @@ class RegisterUserService:
         email_id = user_data.email
         password = user_data.password
         username = user_data.username
+        role = user_data.role
 
         if UserRepository().retrieve_record_by_email(email_id=email_id):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Please Login. User is already resgistered.")
@@ -21,7 +22,7 @@ class RegisterUserService:
         # hash the password
         hashed_password = get_password_hash(password=password)
         # add the record to the DB
-        user = UserRepository().insert(email_id=email_id, hashed_password=hashed_password, username=username)
+        user = UserRepository().insert(email_id=email_id, hashed_password=hashed_password, username=username, role=role)
 
         return user
 

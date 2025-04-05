@@ -32,7 +32,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     if user is None:
         raise credentials_exception
     
-    user = User(username=user["username"], email=user["email_id"], disabled=user["disabled"], user_id=str(user["_id"]))
+    user = User(username=user["username"], email=user["email_id"], disabled=user["disabled"], user_id=str(user["_id"]), role=user["role"])
     return user
 
 

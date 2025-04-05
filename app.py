@@ -8,19 +8,17 @@ mongo_instance = MongoInstance()
 from utilities.logging_utilities import LoggingUtilities
 logging_utilities = LoggingUtilities()
 
-import asyncio
-import platform
-
-# At the start of your main.py or app.py file:
-if platform.system() == "Windows":
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+from mistralai import Mistral
+import os
+mistral_client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
 from fastapi import FastAPI
+app = FastAPI()
 
-    
 from routers import auth
 from routers import candidate
+from routers import recruiter
 
-app = FastAPI()
 app.include_router(auth.router)
 app.include_router(candidate.router)
+app.include_router(recruiter.router)

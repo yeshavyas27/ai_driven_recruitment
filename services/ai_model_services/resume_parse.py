@@ -1,15 +1,13 @@
-from mistralai import Mistral
 import time
-from typing import Dict, Any
 import os
 import json
+from app import mistral_client
 
 class ParseResume:
     def __init__(self):
 
-        self.mistral_api_key = os.getenv("MISTRAL_API_KEY")
-        self.model = "mistral-small-latest"
-        self.client = Mistral(api_key=self.mistral_api_key)
+        self.model = "open-mistral-7b"
+        self.client = mistral_client
         current_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(current_dir, 'parsed_resume_format.json')
 

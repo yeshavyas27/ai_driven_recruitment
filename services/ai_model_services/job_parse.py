@@ -5,14 +5,13 @@ import ast
 import os
 import json
 from langchain_agentql.document_loaders import AgentQLLoader
-
+from app import mistral_client
 
 class ParseJob:
     def __init__(self):
 
-        self.mistral_api_key = os.getenv("MISTRAL_API_KEY")
         self.model = "mistral-large-latest"
-        self.client = Mistral(api_key=self.mistral_api_key)
+        self.client = mistral_client
         current_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(current_dir, 'parsed_job_format.json')
 
@@ -33,8 +32,8 @@ class ParseJob:
                     location(city, state, country or remote)
                     job_description(includes details about the responsiblities, job overview and other context related to job like skills and experience context)
                     education(expected education)[]
-                    all_skills(all kinds technical skills required for the role, this may be implicit and present in job description)[]
-                    key_skills(explicity mentioned skills that the candidate must have)[]
+                    good_to_have_skills(all kinds technical skills required for the role, this may be implicit and present in job description)[]
+                    must_have_skills(explicitly mentioned skills that the candidate must have)[]
                 }
             }
             """,
