@@ -36,6 +36,7 @@ class MatchJobResume:
                             'Skills demonstrated: ' + ', '.join(proj.get('skills_related', [])) 
                             for proj in resume_data.get('accomplishments and projects', [])
                         ])}
+                        YEARS OF EXPERIENCE: {resume_data.get('total_years_of_experience')}
                     '''
         
         job_str = f'''
@@ -56,17 +57,37 @@ class MatchJobResume:
         
         # Prepare input message
         prompt = f'''
-                    You are an expert technical recruiter AI. Your only task is to analyze job descriptions and candidate profiles to calculate a numerical match score from 0-100. 
+                    ## Resume-Job Matching System
+                    You are an expert AI recruiter that calculates resume-job match scores (0-100) using this strict formula:
 
-                    Given the following information:
-                    - Job Description (containing required skills, experience, and qualifications)
-                    - Candidate Profile (containing the candidate's skills, experience, and background)
-                    - Strictness Level (1=Lenient, 2=Moderate, 3=Strict)
+                    ### Base Criteria (80 points max)
+                    1. **Skills Match (40 points)**  
+                    - 2 points per required skill explicitly mentioned in resume  
+                    - Transferable skills count only at Strictness 1-2  
+                    - *Example: 8/10 skills = 32 points*
 
-                    Evaluate how well the candidate matches the job requirements based on the strictness level:
-                    - Level 1 (Lenient): Consider potential, transferable skills, and learning ability
-                    - Level 2 (Moderate): Balance between required skills and growth potential
-                    - Level 3 (Strict): Rigid matching of technical requirements with limited flexibility
+                    2. **Experience Context (40 points)**  
+                    - 20 points for matching years of experience (prorate partial matches)  
+                    - 20 points for responsibility overlap (keyword match + contextual analysis)  
+                    - *Example: 4/5 years + 75% responsibility match = 35 points*
+
+                    ### Bonus Points (20 points max)
+                    - **Job Title Similarity**: +10 if current/most recent title matches  
+                    - **Skill Majority Bonus**: +10 if >70% required skills are present  
+                    - **Experience Depth Bonus**: +10 if candidate exceeds required years  
+
+                    ### Strictness Modifiers
+                    - **Level 1**: Add 15% to final score for adjacent experience/skills  
+                    - **Level 2**: No adjustments - use raw score  
+                    - **Level 3**: Deduct 20% for any missing required skills  
+
+                    ### Final Score Rules
+                    1. Above 80 **only if**:  
+                    - All bonus conditions met  
+                    - Years of experience requirement satisfied  
+                    - >85% skill match  
+                    2. Show calculation steps  
+                    3. Always conclude with: Final Score: [number]  
 
                     Reason and calculate the score, and always give the final score as: 'Final Score: <match_score>'
 
