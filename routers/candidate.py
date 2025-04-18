@@ -107,10 +107,9 @@ async def match_with_job(
     # parse the job link
     job_data = await JobService().parse_job(url=job_link)
     # calculate matches of job with resume in the DB        
-    match_score = MatchJobResume().match(
+    match_score = MatchJobResume(job_data=job_data,match_criteria=match_criteria).match(
         resume_data=resume_data['resume_data'], 
-        job_data=job_data,
-            match_criteria=match_criteria
+        
     )
     return match_score
     
@@ -120,6 +119,7 @@ async def match_with_job(
 async def demo_match(
     file: Annotated[UploadFile, File()],
     job_link: Annotated[str, Body()],
+    match_criteria: Annotated[MatchCriteria, Query(description="Matching criteria: strict - 3, moderate - 2, or flexible - 1")] = MatchCriteria.MODERATE
     ):
     
     if not file:
@@ -135,12 +135,9 @@ async def demo_match(
     # #parse job link and get job data
     job_data = await JobService().parse_job(url=job_link)
     # TODO: calculate match score between resume data and job data
-    match_score = MatchJobResume().match(
-            resume_data=resume_data,
-            job_data=job_data,
-            match_criteria="moderate"
-        )
-
+    match_score = MatchJobResume(job_data=job_data,match_criteria=match_criteria).match(
+        resume_data=resume_data['resume_data'], 
+    )
     
     await file.close()
     response  ={
