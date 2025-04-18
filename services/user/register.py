@@ -1,6 +1,8 @@
 from fastapi import HTTPException, status
+
 from database.user import UserRepository
 from utilities.auth_utilities import get_password_hash
+
 
 class RegisterUserService:
     def __init__(self):

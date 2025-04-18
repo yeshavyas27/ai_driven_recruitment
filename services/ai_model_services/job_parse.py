@@ -1,11 +1,14 @@
-from mistralai import Mistral
-import time
-from typing import Dict, Any
 import ast
-import os
 import json
+import os
+import time
+from typing import Any, Dict
+
 from langchain_agentql.document_loaders import AgentQLLoader
+from mistralai import Mistral
+
 from app import mistral_client
+
 
 class ParseJob:
     def __init__(self):

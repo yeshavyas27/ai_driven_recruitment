@@ -1,11 +1,10 @@
-from abstractions.base_service import BaseService
-
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
-from playwright.sync_api import sync_playwright
 import random
+from concurrent.futures import ThreadPoolExecutor
 
+from playwright.sync_api import sync_playwright
 
+from abstractions.base_service import BaseService
 
 
 class ScrapeService(BaseService):

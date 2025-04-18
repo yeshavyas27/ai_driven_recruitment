@@ -35,10 +35,9 @@ class UserRepository(BaseRepository):
             self.logger.info(f"Successfully retrieved document from {self.collection_name}.")
             self.logger.info(f"The query execution took {DatetimeUtilities.get_delta_in_milliseconds(start_timestamp, end_timestamp)} ms")
 
-
-        except Exception:
+        except Exception as e:
             error = f"Error while inserting new record in {self.collection_name}"
-            self.logger.error(error)
+            self.logger.error(f"{error}\n{traceback.format_exc()}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=error
@@ -53,7 +52,7 @@ class UserRepository(BaseRepository):
         }
         return user
 
-    def retrieve_record_by_email(self, email_id: str,):
+    def retrieve_record_by_email(self, email_id: str):
         self.logger.info(f"Attempting to query {self.collection_name}")
 
         start_timestamp = datetime.now()
@@ -67,19 +66,20 @@ class UserRepository(BaseRepository):
             end_timestamp = datetime.now()
             self.logger.debug(user)
             self.logger.info(f"Successfully retrieving document from {self.collection_name}.")
-
             self.logger.info(f"The query execution took {DatetimeUtilities.get_delta_in_milliseconds(start_timestamp, end_timestamp)} ms")
-
 
             if user:
                 return user
             return None
-        except Exception as exception:
-            self.logger.error(f"Error while retrieving document from {self.collection_name} collection. Exception: {exception}\nTraceback:\n{traceback.print_exc()}")
+        except Exception as e:
+            error = f"Error while retrieving document from {self.collection_name} collection."
+            self.logger.error(f"{error}\n{traceback.format_exc()}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=error
+            )
 
-            raise HTTPException(f"Error while retrieving document from {self.collection_name} collection.")
-        
-    def retrieve_record_by_username(self, username: str,):
+    def retrieve_record_by_username(self, username: str):
         self.logger.info(f"Attempting to query {self.collection_name}")
         start_timestamp = datetime.now()
 
@@ -92,26 +92,29 @@ class UserRepository(BaseRepository):
             end_timestamp = datetime.now()
             self.logger.debug(user)
             self.logger.info(f"Successfully retrieving document from {self.collection_name}.")
-
             self.logger.info(f"The query execution took {DatetimeUtilities.get_delta_in_milliseconds(start_timestamp, end_timestamp)} ms")
 
             if user:
                 return user
             return None
-        except Exception as exception:
-            self.logger.error(f"Error while retrieving document from {self.collection_name} collection. Exception: {exception}\nTraceback:\n{traceback.print_exc()}")
-            raise HTTPException(f"Error while retrieving document from {self.collection_name} collection.")
-        
-    def update_user_with_resume(self, s3_key: str, resume_id: str, username: str):
+        except Exception as e:
+            error = f"Error while retrieving document from {self.collection_name} collection."
+            self.logger.error(f"{error}\n{traceback.format_exc()}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=error
+            )
+
+    def update_user_with_resume(self, username: str, s3_key: str = None, resume_id: str = None):
         start_timestamp = datetime.now()
         query = {
-                "username": username,
+            "username": username,
         }
         update_operation = {
-                '$set':{
-                    "s3_key": s3_key, 
-                    "resume_id": resume_id
-                }
+            '$set': {
+                "s3_key": s3_key,
+                "resume_id": resume_id
+            }
         }
         try:
             self.logger.debug("Attempting to update user record in database")
@@ -119,9 +122,9 @@ class UserRepository(BaseRepository):
             end_timestamp = datetime.now()
             self.logger.info(f"The query execution took {DatetimeUtilities.get_delta_in_milliseconds(start_timestamp, end_timestamp)} ms")
 
-        except Exception:
+        except Exception as e:
             error = f"Error while updating record in {self.collection_name}"
-            self.logger.error(error)
+            self.logger.error(f"{error}\n{traceback.format_exc()}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=error

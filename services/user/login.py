@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 from database.user import UserRepository
 from utilities.auth_utilities import verify_password
 
+
 class LoginService:
     def __init__(self):
         pass

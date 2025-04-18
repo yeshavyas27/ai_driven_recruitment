@@ -3,12 +3,11 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-
-from models.auth import User
-from constants.auth import AuthConstants
-
 from jwt.exceptions import InvalidTokenError
+
+from constants.auth import AuthConstants
 from database.user import UserRepository
+from models.auth import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

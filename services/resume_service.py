@@ -1,16 +1,18 @@
-import boto3
-from pdfminer.high_level import extract_text
+import os
 from io import BytesIO
 from uuid import uuid4
+
+import boto3
 from fastapi import HTTPException, status
-import os
+from pdfminer.high_level import extract_text
+
 from abstractions.base_service import BaseService
-from services.ai_model_services.resume_parse import ParseResume
 from database.resume import ResumeRepository
+from services.ai_model_services.resume_parse import ParseResume
 
 
 class ResumeService(BaseService):
-    def __init__(self, file_contents):
+    def __init__(self, file_contents = None):
         super().__init__()
         self.file_contents = file_contents
 
@@ -47,6 +49,34 @@ class ResumeService(BaseService):
         )
 
         return parsed_resume, resume_id
+    
+    def parse(self):
+        pdf_file = BytesIO(self.file_contents)
+        
+        # Extract text from the PDF
+        try:
+            text = extract_text(pdf_file)
+            # Remove newlines and backslashes
+            text = text.replace("\n", "").replace("\\", "")
+
+            self.logger.debug(f"Resume text extracted using pdfminer successfully")
+        except Exception as e:
+            raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Unable to extract text from the pdf file'
+        )
+        parsed_resume = ParseResume().parse(resume_data=text)
+
+        return parsed_resume
+    
+    def save(self, parsed_resume, user_id, s3_key):
+        resume_id = ResumeRepository().insert(
+            resume_data=parsed_resume,
+            user_id=user_id,
+            s3_key=s3_key
+        )
+        return resume_id
+
     
     async def __s3_upload(self, key: str):
         self.logger.info(f'Uploading {key} to s3')

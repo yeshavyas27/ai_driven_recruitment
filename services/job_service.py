@@ -1,5 +1,3 @@
-from playwright.async_api import async_playwright
-
 from abstractions.base_service import BaseService
 from services.ai_model_services.job_parse import ParseJob
 from services.scrape_service import ScrapeService

@@ -1,7 +1,9 @@
-import time
-import os
 import json
+import os
+import time
+
 from app import mistral_client
+
 
 class ParseResume:
     def __init__(self):
@@ -49,12 +51,12 @@ class ParseResume:
         parsed_resume = json.loads(response_content)
         response = {
             **parsed_resume,
-            "metrics": {
-                "inference_time_seconds": inference_time,
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "total_tokens": total_tokens
-            }
+            # "metrics": {
+            #     "inference_time_seconds": inference_time,
+            #     "input_tokens": input_tokens,
+            #     "output_tokens": output_tokens,
+            #     "total_tokens": total_tokens
+            # }
         }
         return response
         

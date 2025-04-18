@@ -1,17 +1,15 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, APIRouter, status
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from models.auth import User, UserCreate, Token
 from constants.auth import AuthConstants
-
-
-from services.user.register import RegisterUserService
-from services.user.login import LoginService
-from utilities.auth_utilities import create_access_token
 from dependancies.auth import get_current_active_user
+from models.auth import Token, User, UserCreate
+from services.user.login import LoginService
+from services.user.register import RegisterUserService
+from utilities.auth_utilities import create_access_token
 from utilities.logging_utilities import LoggingUtilities
 
 logger = LoggingUtilities().get_logger()
@@ -34,7 +32,6 @@ async def register(user_data: UserCreate) -> Token:
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
-    # TODO: add user_id to token 
     user = LoginService().do(user_data=form_data)
 
     access_token_expires = timedelta(minutes=AuthConstants.ACCESS_TOKEN_EXPIRE_MINUTES)
