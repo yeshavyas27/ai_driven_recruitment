@@ -10,12 +10,14 @@ class JobService(BaseService):
     async def parse_job(self, url, approach="agentql"):
         if approach == "agentql":
             job_data = ParseJob().parse_job_data_agentql(job_link=url)
-        
-        else:
-            page_data = await ScrapeService().scrape(url)
-            # TODO: extract only sensible text from the extracted text and pass that to the model
-            job_data = ParseJob().parse_job_data(page_data=page_data)
+            self.logger.info(f"The job data is {job_data}")
 
-        return job_data
+            if not job_data["company_name"]:
+                self.logger.warning(f"Job data not found using agentql for url: {url}")
+                # Fallback to scraping if agentql fails
+                page_data = await ScrapeService().scrape(url)
+                job_data = ParseJob().parse_job_data(page_data=page_data)
+
+            return job_data
 
 
