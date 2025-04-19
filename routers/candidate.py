@@ -35,6 +35,7 @@ async def parse_resume(
     contents = await file.read()
     #upload resume service to s3, add s3 link to user db and user's resume db (background task)
     resume_service = ResumeService(file_contents=contents)
+    # TODO: check if s3 file aleardy exists, if yes then delete the old file and upload new one
     file_name = await resume_service.upload_resume_to_s3()
     parsed_resume = resume_service.parse()
 
@@ -74,8 +75,8 @@ async def get_profile(
     # based on the user_id find the in the resume collection and return the data 
 
     return {
-        "resume_data": resume_data["resume_data"],
-        "s3_file_link": s3_url_format(s3_key=resume_data["s3_key"])
+        "parsed_resume": resume_data["resume_data"],
+        "s3_link": s3_url_format(s3_key=resume_data["s3_key"])
     }
     
 
@@ -104,6 +105,11 @@ async def match_with_job(
     # get the candidate profile, get this data from mongodb
     # match the candidate profile with the job link and return the match score
     resume_data = ResumeRepository().fetch_by_user_id(user_id=user.user_id)
+    if not resume_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='No profile details found!! Please upload your resume first/ fill in profile data.'
+        )
     # parse the job link
     job_data = await JobService().parse_job(url=job_link)
     # calculate matches of job with resume in the DB        

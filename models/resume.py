@@ -31,12 +31,12 @@ class Project(BaseModel):
 
 
 class Resume(BaseModel):
-    name: str | None
-    linkedin: str | None
-    github: str | None
-    education: List[Education] | None
-    skills: List[str] | None
-    experience: List[Experience] | None
-    accomplishments_and_projects: List[Project] | None 
+    name: str 
+    linkedin: str | None = None
+    github: str | None = None
+    education: List[Education] | None = None
+    skills: List[str] 
+    experience: List[Experience] | None = None
+    accomplishments_and_projects: List[Project] | None = None
     total_years_of_experience: str | None
 

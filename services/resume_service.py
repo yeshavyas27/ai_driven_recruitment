@@ -70,6 +70,8 @@ class ResumeService(BaseService):
         return parsed_resume
     
     def save(self, parsed_resume, user_id, s3_key):
+        # TODO: check if resume already exists in the db, if yes then update the resume data
+
         resume_id = ResumeRepository().insert(
             resume_data=parsed_resume,
             user_id=user_id,
