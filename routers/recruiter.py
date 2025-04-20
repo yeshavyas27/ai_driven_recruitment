@@ -77,7 +77,8 @@ async def find_matches(
         all_matches.append(
             {
                 "match_score": int(match_score),
-                "resume_link": candidate_s3_resume_link
+                "resume_link": candidate_s3_resume_link if candidate_s3_resume_link else None,
+                "user_profile": resume['resume_data'],
             }       
         )
         #added sleep due to mistral free tier limit of 1 request per second

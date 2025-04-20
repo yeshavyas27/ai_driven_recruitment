@@ -24,6 +24,16 @@ class ResumeService(BaseService):
         await self.__s3_upload(key=file_name)
         return file_name
 
+    def delete_resume_in_s3(self, file_name):
+        try:
+            s3 = boto3.client('s3')
+            s3.delete_object(Bucket=os.getenv("AWS_S3_BUCKET"), Key=file_name)
+            self.logger.info(f'{file_name} deleted from s3 successfully')
+            return True
+        except Exception as e:
+            self.logger.error(f"Error deleting file from S3: {e}")
+            return False
+    
 
     def parse_and_save_resume(self, user_id, s3_key):
         # Convert bytes to BytesIO for pdfminer

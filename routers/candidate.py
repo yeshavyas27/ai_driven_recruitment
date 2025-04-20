@@ -35,15 +35,28 @@ async def parse_resume(
     contents = await file.read()
     #upload resume service to s3, add s3 link to user db and user's resume db (background task)
     resume_service = ResumeService(file_contents=contents)
-    # TODO: check if s3 file aleardy exists, if yes then delete the old file and upload new one
-    file_name = await resume_service.upload_resume_to_s3()
-    parsed_resume = resume_service.parse()
 
+    resume_data = ResumeRepository().fetch_by_user_id(user_id=user.user_id)
+    if resume_data["s3_key"]:
+        is_success = resume_service.delete_resume_in_s3(file_name=resume_data["s3_key"])
+        if not is_success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='Unable to delete old resume from s3'
+            )
+        
+    file_name = await resume_service.upload_resume_to_s3()
+    if not file_name:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Unable to upload resume to s3'
+        )
+    
+    parsed_resume = resume_service.parse()
     UserRepository().update_user_with_resume(
         s3_key=file_name,
         username=user.username
     )
-    # TODO: if resume s3 file already exists and new given then delete old one, and save new one in s3
 
     return{
         "parsed_resume": parsed_resume,
@@ -53,15 +66,16 @@ async def parse_resume(
 @router.post('/save_profile')
 async def save_parsed_resume(
     parsed_resume: Annotated[Resume, Body()],
-    s3_link: Annotated[str, Body()],
     user: Annotated[User, Depends(get_current_active_user)],
+    s3_link: Annotated[str, Body()] =  None,
     ):
     # save the canidate profile, add this data to mongodb
     resume_id = ResumeService().save(parsed_resume.model_dump(), user.user_id, get_s3_key_from_url(s3_link))
     
     UserRepository().update_user_with_resume(
         resume_id=resume_id,
-        username=user.username
+        username=user.username,
+        s3_key=get_s3_key_from_url(s3_link)
     )
 
     return {"message": "Profile saved successfully"}
@@ -76,7 +90,7 @@ async def get_profile(
 
     return {
         "parsed_resume": resume_data["resume_data"],
-        "s3_link": s3_url_format(s3_key=resume_data["s3_key"])
+        "s3_link": s3_url_format(s3_key=resume_data["s3_key"]) if resume_data["s3_key"] else None,
     }
     
 
