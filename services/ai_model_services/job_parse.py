@@ -82,11 +82,11 @@ class ParseJob:
         parsed_job = json.loads(response_content)
         response = {
             **parsed_job,
-            "metrics": {
-                "inference_time_seconds": inference_time,
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "total_tokens": total_tokens
-            }
+            # "metrics": {
+            #     "inference_time_seconds": inference_time,
+            #     "input_tokens": input_tokens,
+            #     "output_tokens": output_tokens,
+            #     "total_tokens": total_tokens
+            # }
         }
         return response
