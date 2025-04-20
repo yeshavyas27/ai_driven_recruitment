@@ -37,13 +37,14 @@ async def parse_resume(
     resume_service = ResumeService(file_contents=contents)
 
     resume_data = ResumeRepository().fetch_by_user_id(user_id=user.user_id)
-    if resume_data["s3_key"]:
-        is_success = resume_service.delete_resume_in_s3(file_name=resume_data["s3_key"])
-        if not is_success:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail='Unable to delete old resume from s3'
-            )
+    if resume_data:
+        if resume_data["s3_key"]:
+            is_success = resume_service.delete_resume_in_s3(file_name=resume_data["s3_key"])
+            if not is_success:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Unable to delete old resume from s3'
+                )
         
     file_name = await resume_service.upload_resume_to_s3()
     if not file_name:
@@ -53,10 +54,6 @@ async def parse_resume(
         )
     
     parsed_resume = resume_service.parse()
-    UserRepository().update_user_with_resume(
-        s3_key=file_name,
-        username=user.username
-    )
 
     return{
         "parsed_resume": parsed_resume,
@@ -96,14 +93,16 @@ async def get_profile(
 
 @router.put('/update_profile')
 async def update_profile(
-    resume_data: Annotated[Resume, Body()],
+    parsed_resume: Annotated[Resume, Body()],
     user: Annotated[User, Depends(get_current_active_user)],
+    s3_link: Annotated[str, Body()] =  None,
     ):
     # update the candidate profile, update this data to mongodb
-    print("resume_data", resume_data.model_dump())
+    print("resume_data", parsed_resume.model_dump())
     ResumeRepository().update_resume_data_by_user_id(
         user_id=user.user_id,       
-        resume_data=resume_data.model_dump()
+        resume_data=parsed_resume.model_dump(),
+        s3_key=get_s3_key_from_url(s3_link) if s3_link else None
     )
 
     return {

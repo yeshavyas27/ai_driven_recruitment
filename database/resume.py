@@ -83,7 +83,7 @@ class ResumeRepository(BaseRepository):
             
         return candidate_resume
 
-    def update_resume_data_by_user_id(self, user_id: str, resume_data: dict):
+    def update_resume_data_by_user_id(self, user_id: str, resume_data: dict, s3_key: str = None):
         start_timestamp = datetime.now()
         try:
             self.collection.update_one(
@@ -91,6 +91,7 @@ class ResumeRepository(BaseRepository):
                 {
                     "$set": {
                         "resume_data": resume_data,
+                        "s3_key": s3_key,
                     }
                 }
             )
