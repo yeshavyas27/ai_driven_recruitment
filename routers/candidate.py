@@ -134,7 +134,7 @@ async def match_with_job(
     
 
 # test/demo endpoint to test the match score between resume and job data, saves no data
-@router.post('/match')
+@router.post('/demo_match')
 async def demo_match(
     file: Annotated[UploadFile, File()],
     job_link: Annotated[str, Body()],
